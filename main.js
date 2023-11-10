@@ -88,12 +88,12 @@ const cubeTextureLoader = new THREE.CubeTextureLoader();
 // set up environment maps
 const envMaps = (function () {
 
-    const path = './assets/texture/cube/bridge2/';
+    const path = './assets/texture/cube/royal_castle/';
     const format = '.jpg';
     const urls = [
-        path + 'posx' + format, path + 'negx' + format,
-        path + 'posy' + format, path + 'negy' + format,
-        path + 'posz' + format, path + 'negz' + format
+        path + 'px' + format, path + 'nx' + format,
+        path + 'py' + format, path + 'ny' + format,
+        path + 'pz' + format, path + 'nz' + format
     ];
 
     const reflectionCube = cubeTextureLoader.load(urls);
@@ -113,6 +113,21 @@ const envMaps = (function () {
 const diffuseMaps = (function () {
 
     const bricks = textureLoader.load('/assets/texture/brick_diffuse.jpg');
+    bricks.wrapS = THREE.RepeatWrapping;
+    bricks.wrapT = THREE.RepeatWrapping;
+    bricks.repeat.set(9, 1);
+
+    return {
+        none: null,
+        bricks: bricks
+    };
+
+})();
+
+// set bump maps
+const bumpMaps = (function () {
+
+    const bricks = textureLoader.load('/assets/texture/brick_bump.jpg');
     bricks.wrapS = THREE.RepeatWrapping;
     bricks.wrapT = THREE.RepeatWrapping;
     bricks.repeat.set(9, 1);
@@ -185,6 +200,7 @@ const gradientMaps = (function () {
 const envMapKeys = getObjectsKeys(envMaps);
 const envMapKeysPBR = envMapKeys.slice(0, 2);
 const diffuseMapKeys = getObjectsKeys(diffuseMaps);
+const bumpMapKeys = getObjectsKeys(bumpMaps);
 const roughnessMapKeys = getObjectsKeys(roughnessMaps);
 const matcapKeys = getObjectsKeys(matcaps);
 const alphaMapKeys = getObjectsKeys(alphaMaps);
@@ -404,6 +420,7 @@ function guiMeshLambertMaterial(gui, mesh, material, geometry) {
         color: material.color.getHex(),
         emissive: material.emissive.getHex(),
         envMaps: envMapKeys[0],
+        bumpMaps: bumpMapKeys[0],
         map: diffuseMapKeys[0],
         alphaMap: alphaMapKeys[0]
     };
@@ -414,10 +431,13 @@ function guiMeshLambertMaterial(gui, mesh, material, geometry) {
     folder.addColor(data, 'emissive').onChange(handleColorChange(material.emissive));
 
     folder.add(material, 'wireframe');
+    folder.add(material, 'flatShading').onChange(needsUpdate(material, geometry));
     folder.add(material, 'vertexColors').onChange(needsUpdate(material, geometry));
     folder.add(material, 'fog').onChange(needsUpdate(material, geometry));
 
     folder.add(data, 'envMaps', envMapKeys).onChange(updateTexture(material, 'envMap', envMaps));
+    folder.add(data, 'bumpmap', bumpMapKeys).onChange(updateTexture(material, 'bumpMap', bumpMaps));
+    folder.add(material, 'bumpScale', 0, 1);
     folder.add(data, 'map', diffuseMapKeys).onChange(updateTexture(material, 'map', diffuseMaps));
     folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
     folder.add(material, 'combine', constants.combine).onChange(updateCombine(material));
