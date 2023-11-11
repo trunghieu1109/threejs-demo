@@ -1,6 +1,8 @@
 import * as THREE from './three/three.module.js';
 import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
 import { GUI } from './jsm/libs/lil-gui.module.min.js'
+import { OrbitControls } from './three/OrbitControls.js'
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js'
 
 // define constants for properties
 const constants = {
@@ -117,9 +119,21 @@ const diffuseMaps = (function () {
     bricks.wrapT = THREE.RepeatWrapping;
     bricks.repeat.set(9, 1);
 
+    const bricks2 = textureLoader.load('/assets/texture/brick_diffuse2.jpg');
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+
+    const bricks3 = textureLoader.load('/assets/texture/brick_diffuse3.jpg');
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+
     return {
         none: null,
-        bricks: bricks
+        bricks: bricks,
+        bricks2: bricks2,
+        bricks3: bricks3
     };
 
 })();
@@ -127,14 +141,119 @@ const diffuseMaps = (function () {
 // set bump maps
 const bumpMaps = (function () {
 
-    const bricks = textureLoader.load('/assets/texture/brick_bump.jpg');
+    const bricks = textureLoader.load('/assets/texture/brick_roughness.jpg');
+    bricks.wrapS = THREE.RepeatWrapping;
+    bricks.wrapT = THREE.RepeatWrapping;
+    bricks.repeat.set(9, 1);
+    const bricks2 = textureLoader.load('/assets/texture/brick_bump.jpg');
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+    const bricks3 = textureLoader.load('/assets/texture/brick_bump_2.jpg');
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+    const bricks4 = textureLoader.load('/assets/texture/hardwood2_bump.jpg');
+    bricks4.wrapS = THREE.RepeatWrapping;
+    bricks4.wrapT = THREE.RepeatWrapping;
+    bricks4.repeat.set(9, 1);
+    const bricks5 = textureLoader.load('/assets/texture/hardwood2_roughness.jpg');
+    bricks5.wrapS = THREE.RepeatWrapping;
+    bricks5.wrapT = THREE.RepeatWrapping;
+    bricks5.repeat.set(9, 1);
+
+    const perry = textureLoader.load('./assets/models/perry/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
+    perry.wrapS = THREE.RepeatWrapping;
+    perry.wrapT = THREE.RepeatWrapping;
+    perry.repeat.set(9, 1);
+
+    return {
+        none: null,
+        bricks_bump1: bricks,
+        bricks_bump2: bricks2,
+        bricks_bump3: bricks3,
+        bricks_bump4: bricks4,
+        bricks_bump5: bricks5,
+        perry: perry
+
+    };
+
+})();
+
+// set normal maps
+const normalMaps = (function () {
+
+    const bricks = textureLoader.load('/assets/texture/brick_normal.png');
     bricks.wrapS = THREE.RepeatWrapping;
     bricks.wrapT = THREE.RepeatWrapping;
     bricks.repeat.set(9, 1);
 
+
+    const bricks2 = textureLoader.load('/assets/texture/normal2.png');
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+
+    const perry = textureLoader.load('/assets/models/perry/Infinite-Level_02_Tangent_SmoothUV.jpg');
+    perry.wrapS = THREE.RepeatWrapping;
+    perry.wrapT = THREE.RepeatWrapping;
+    perry.repeat.set(9, 1);
+
+
     return {
         none: null,
-        bricks: bricks
+        bricks_normal1: bricks,
+        bricks_normal2: bricks2,
+        perry: perry
+    };
+
+})();
+
+// set displacement maps
+const displacementMaps = (function () {
+
+    const bricks = textureLoader.load('/assets/texture/brick_displacement.png');
+    bricks.wrapS = THREE.RepeatWrapping;
+    bricks.wrapT = THREE.RepeatWrapping;
+    bricks.repeat.set(9, 1);
+
+    const perry = textureLoader.load('./assets/models/perry/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
+    perry.wrapS = THREE.RepeatWrapping;
+    perry.wrapT = THREE.RepeatWrapping;
+    perry.repeat.set(9, 1);
+
+    return {
+        none: null,
+        bricks_displacement1: bricks,
+        perry: perry
+    };
+
+})();
+
+// set ao maps
+const aoMaps = (function () {
+
+    const bricks = textureLoader.load('/assets/texture/brick_ao.png');
+    bricks.wrapS = THREE.RepeatWrapping;
+    bricks.wrapT = THREE.RepeatWrapping;
+    bricks.repeat.set(9, 1);
+
+
+    const bricks2 = textureLoader.load('/assets/texture/aoMap2.png');
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+
+    const bricks3 = textureLoader.load('/assets/texture/aoMap3.png');
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+
+    return {
+        none: null,
+        bricks_ao: bricks,
+        bricks_ao2: bricks2,
+        bricks_ao3: bricks3
     };
 
 })();
@@ -146,10 +265,26 @@ const roughnessMaps = (function () {
     bricks.wrapT = THREE.RepeatWrapping;
     bricks.wrapS = THREE.RepeatWrapping;
     bricks.repeat.set(9, 1);
+    const bricks3 = textureLoader.load('./assets/texture/roughness_3.jpg');
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+    const bricks2 = textureLoader.load('./assets/texture/hardwood2_roughness.jpg');
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+
+    const bricks4 = textureLoader.load('./assets/texture/roughness_4.jpg');
+    bricks4.wrapT = THREE.RepeatWrapping;
+    bricks4.wrapS = THREE.RepeatWrapping;
+    bricks4.repeat.set(9, 1);
 
     return {
         none: null,
-        bricks: bricks
+        bricks: bricks,
+        bricks2: bricks2,
+        bricks3: bricks3,
+        bricks4: bricks4
     };
 
 })();
@@ -201,6 +336,9 @@ const envMapKeys = getObjectsKeys(envMaps);
 const envMapKeysPBR = envMapKeys.slice(0, 2);
 const diffuseMapKeys = getObjectsKeys(diffuseMaps);
 const bumpMapKeys = getObjectsKeys(bumpMaps);
+const normalMapKeys = getObjectsKeys(normalMaps);
+const displacementMapKeys = getObjectsKeys(displacementMaps);
+const aoMapKeys = getObjectsKeys(aoMaps)
 const roughnessMapKeys = getObjectsKeys(roughnessMaps);
 const matcapKeys = getObjectsKeys(matcaps);
 const alphaMapKeys = getObjectsKeys(alphaMaps);
@@ -268,10 +406,9 @@ function updateCombine(material) {
 function updateTexture(material, materialKey, textures) {
 
     return function (key) {
-
         material[materialKey] = textures[key];
         material.needsUpdate = true;
-
+        console.log(material.normalMap)
     };
 
 }
@@ -325,7 +462,7 @@ function guiSceneFog(folder, scene) {
 }
 
 // set gui for material
-function guiMaterial(gui, mesh, material, geometry) {
+function guiMaterial(gui, material, geometry) {
 
     const folder = gui.addFolder('THREE.Material');
 
@@ -345,13 +482,14 @@ function guiMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshbasicmaterial
-function guiMeshBasicMaterial(gui, mesh, material, geometry) {
+function guiMeshBasicMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
         envMaps: envMapKeys[0],
         map: diffuseMapKeys[0],
-        alphaMap: alphaMapKeys[0]
+        alphaMap: alphaMapKeys[0],
+        aoMap: aoMapKeys[0]
     };
 
     const folder = gui.addFolder('THREE.MeshBasicMaterial');
@@ -364,6 +502,7 @@ function guiMeshBasicMaterial(gui, mesh, material, geometry) {
     folder.add(data, 'envMaps', envMapKeys).onChange(updateTexture(material, 'envMap', envMaps));
     folder.add(data, 'map', diffuseMapKeys).onChange(updateTexture(material, 'map', diffuseMaps));
     folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
+    folder.add(data, 'aoMap', aoMapKeys).onChange(updateTexture(material, 'aoMap', aoMaps));
     folder.add(material, 'combine', constants.combine).onChange(updateCombine(material));
     folder.add(material, 'reflectivity', 0, 1);
     folder.add(material, 'refractionRatio', 0, 1);
@@ -371,7 +510,7 @@ function guiMeshBasicMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshdepthmaterial
-function guiMeshDepthMaterial(gui, mesh, material) {
+function guiMeshDepthMaterial(gui, material) {
 
     const data = {
         alphaMap: alphaMapKeys[0]
@@ -382,21 +521,29 @@ function guiMeshDepthMaterial(gui, mesh, material) {
     folder.add(material, 'wireframe');
 
     folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
+    // folder.add(data, 'd', envMapKeys).onChange(updateTexture(material, 'envMap', envMaps));
 
 }
 
 // set gui for meshnormalmaterial
-function guiMeshNormalMaterial(gui, mesh, material, geometry) {
+function guiMeshNormalMaterial(gui, material, geometry) {
+    const data = {
+        bumpMaps: bumpMapKeys[0],
+        normalMaps: normalMapKeys[0]
+    };
+
 
     const folder = gui.addFolder('THREE.MeshNormalMaterial');
 
     folder.add(material, 'flatShading').onChange(needsUpdate(material, geometry));
     folder.add(material, 'wireframe');
+    folder.add(data, 'bumpMap', bumpMapKeys).onChange(updateTexture(material, 'bumpMap', bumpMaps));
+    folder.add(data, 'normalMap', normalMapKeys).onChange(updateTexture(material, 'normalMap', normalMaps));
 
 }
 
 // set gui for linebasicmaterial
-function guiLineBasicMaterial(gui, mesh, material, geometry) {
+function guiLineBasicMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex()
@@ -414,13 +561,16 @@ function guiLineBasicMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshlambertmaterial
-function guiMeshLambertMaterial(gui, mesh, material, geometry) {
+function guiMeshLambertMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
         emissive: material.emissive.getHex(),
-        envMaps: envMapKeys[0],
-        bumpMaps: bumpMapKeys[0],
+        envMap: envMapKeys[0],
+        bumpMap: bumpMapKeys[0],
+        normalMap: normalMapKeys[0],
+        displacementMap: displacementMapKeys[0],
+        aoMap: aoMapKeys[0],
         map: diffuseMapKeys[0],
         alphaMap: alphaMapKeys[0]
     };
@@ -436,8 +586,12 @@ function guiMeshLambertMaterial(gui, mesh, material, geometry) {
     folder.add(material, 'fog').onChange(needsUpdate(material, geometry));
 
     folder.add(data, 'envMaps', envMapKeys).onChange(updateTexture(material, 'envMap', envMaps));
-    folder.add(data, 'bumpmap', bumpMapKeys).onChange(updateTexture(material, 'bumpMap', bumpMaps));
+    folder.add(data, 'bumpMap', bumpMapKeys).onChange(updateTexture(material, 'bumpMap', bumpMaps));
     folder.add(material, 'bumpScale', 0, 1);
+    folder.add(data, 'normalMap', normalMapKeys).onChange(updateTexture(material, 'normalMap', normalMaps));
+    folder.add(data, 'displacementMap', displacementMapKeys).onChange(updateTexture(material, 'displacementMap', displacementMaps));
+    //folder.add(material, 'displacementBias', -1, 1);
+    folder.add(data, 'aoMap', aoMapKeys).onChange(updateTexture(material, 'aoMap', aoMaps));
     folder.add(data, 'map', diffuseMapKeys).onChange(updateTexture(material, 'map', diffuseMaps));
     folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
     folder.add(material, 'combine', constants.combine).onChange(updateCombine(material));
@@ -447,7 +601,7 @@ function guiMeshLambertMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshmatcapmaterial
-function guiMeshMatcapMaterial(gui, mesh, material, geometry) {
+function guiMeshMatcapMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
@@ -466,7 +620,7 @@ function guiMeshMatcapMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshphongmaterial
-function guiMeshPhongMaterial(gui, mesh, material, geometry) {
+function guiMeshPhongMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
@@ -498,7 +652,7 @@ function guiMeshPhongMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshtoonmaterial
-function guiMeshToonMaterial(gui, mesh, material) {
+function guiMeshToonMaterial(gui, material) {
 
     const data = {
         color: material.color.getHex(),
@@ -517,7 +671,7 @@ function guiMeshToonMaterial(gui, mesh, material) {
 }
 
 // set gui for meshstandardmaterial
-function guiMeshStandardMaterial(gui, mesh, material, geometry) {
+function guiMeshStandardMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
@@ -549,7 +703,7 @@ function guiMeshStandardMaterial(gui, mesh, material, geometry) {
 }
 
 // set gui for meshphysicalmaterial
-function guiMeshPhysicalMaterial(gui, mesh, material, geometry) {
+function guiMeshPhysicalMaterial(gui, material, geometry) {
 
     const data = {
         color: material.color.getHex(),
@@ -596,7 +750,7 @@ function guiMeshPhysicalMaterial(gui, mesh, material, geometry) {
 }
 
 // choose gui material
-function chooseFromHash(gui, mesh, geometry) {
+function chooseFromHash(gui, geometry) {
 
     const selectedMaterial = window.location.hash.substring(1) || 'MeshBasicMaterial';
 
@@ -607,8 +761,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshBasicMaterial':
 
             material = new THREE.MeshBasicMaterial({ color: 0x049EF4 });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshBasicMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshBasicMaterial(gui, material, geometry);
 
             return material;
 
@@ -617,8 +771,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshLambertMaterial':
 
             material = new THREE.MeshLambertMaterial({ color: 0x049EF4 });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshLambertMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshLambertMaterial(gui, material, geometry);
 
             return material;
 
@@ -627,8 +781,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshMatcapMaterial':
 
             material = new THREE.MeshMatcapMaterial({ matcap: matcaps.porcelainWhite });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshMatcapMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshMatcapMaterial(gui, material, geometry);
 
             // no need for lights
 
@@ -643,8 +797,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshPhongMaterial':
 
             material = new THREE.MeshPhongMaterial({ color: 0x049EF4 });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshPhongMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshPhongMaterial(gui, material, geometry);
 
             return material;
 
@@ -653,8 +807,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshToonMaterial':
 
             material = new THREE.MeshToonMaterial({ color: 0x049EF4, gradientMap: gradientMaps.threeTone });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshToonMaterial(gui, mesh, material);
+            guiMaterial(gui, material, geometry);
+            guiMeshToonMaterial(gui, material);
 
             // only use a single point light
 
@@ -668,8 +822,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshStandardMaterial':
 
             material = new THREE.MeshStandardMaterial({ color: 0x049EF4 });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshStandardMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshStandardMaterial(gui, material, geometry);
 
             // only use scene environment
 
@@ -684,8 +838,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshPhysicalMaterial':
 
             material = new THREE.MeshPhysicalMaterial({ color: 0x049EF4 });
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshPhysicalMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshPhysicalMaterial(gui, material, geometry);
 
             // only use scene environment
 
@@ -700,8 +854,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshDepthMaterial':
 
             material = new THREE.MeshDepthMaterial();
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshDepthMaterial(gui, mesh, material);
+            guiMaterial(gui, material, geometry);
+            guiMeshDepthMaterial(gui, material);
 
             return material;
 
@@ -710,8 +864,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'MeshNormalMaterial':
 
             material = new THREE.MeshNormalMaterial();
-            guiMaterial(gui, mesh, material, geometry);
-            guiMeshNormalMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiMeshNormalMaterial(gui, material, geometry);
 
             return material;
 
@@ -720,8 +874,8 @@ function chooseFromHash(gui, mesh, geometry) {
         case 'LineBasicMaterial':
 
             material = new THREE.LineBasicMaterial({ color: 0x2194CE });
-            guiMaterial(gui, mesh, material, geometry);
-            guiLineBasicMaterial(gui, mesh, material, geometry);
+            guiMaterial(gui, material, geometry);
+            guiLineBasicMaterial(gui, material, geometry);
 
             return material;
 
@@ -751,14 +905,30 @@ document.body.appendChild(renderer.domElement);
 // set generator for environment maps
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 
+const path = './assets/texture/cube/royal_castle/';
+const format = '.jpg';
+const urls = [
+    path + 'px' + format, path + 'nx' + format,
+    path + 'py' + format, path + 'ny' + format,
+    path + 'pz' + format, path + 'nz' + format
+];
+
+const cubeBackground = cubeTextureLoader.load(urls);
+
 // set scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x444444);
+scene.background = cubeBackground;
 scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
 // set camera
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 10, 100);
 camera.position.z = 35;
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.screenSpacePanning = false;
+controls.maxPolarAngle = Math.PI;
 
 
 // set light
@@ -781,27 +951,64 @@ guiScene(gui, scene);
 
 // create geometry
 const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32).toNonIndexed();
+geometry.attributes.uv2 = geometry.attributes.uv;
 
 generateVertexColors(geometry);
 
-// create material
-const mesh = new THREE.Mesh(geometry);
-mesh.material = chooseFromHash(gui, mesh, geometry);
+// load models
+const url = './assets/models/perry/skull_downloadable.glb';
+const gltfLoader = new GLTFLoader();
+const gltf = await gltfLoader.loadAsync(url);
+const model = gltf.scene
 
-scene.add(mesh);
+// create material
+const material = chooseFromHash(gui, geometry);
+
+// add model
+model.traverse((child) => {
+    if (child.isMesh) {
+        child.material = material;
+    }
+});
+model.scale.set(10, 10, 10);
+scene.add(model)
+
+// add geometry
+// const mesh = new THREE.Mesh(geometry)
+// mesh.material = material
+// scene.add(mesh)
+
 
 let prevFog = false;
 
+
+// use geometry
+// function render() {
+
+// 	requestAnimationFrame(render);
+
+// 	mesh.rotation.x += 0.005;
+// 	mesh.rotation.y += 0.005;
+// 	controls.update();
+
+// 	if (prevFog !== scene.fog) {
+
+// 		mesh.material.needsUpdate = true;
+// 		prevFog = scene.fog;
+
+// 	}
+
+// 	renderer.render(scene, camera);
+
+// }
+
+// use model
 function render() {
 
     requestAnimationFrame(render);
-
-    mesh.rotation.x += 0.005;
-    mesh.rotation.y += 0.005;
+    controls.update();
 
     if (prevFog !== scene.fog) {
-
-        mesh.material.needsUpdate = true;
         prevFog = scene.fog;
 
     }
