@@ -68,10 +68,10 @@ const constants = {
         'DepthModels': './assets/models/perry/skull_downloadable.glb',
         'NormalModels': './assets/models/perry/skull_downloadable.glb',
         'LambertModels': './assets/models/perry/skull_downloadable.glb',
-        'PhongModels': './assets/models/perry/skull_downloadable.glb',
+        'PhongModels': "",
         'StandardModels': './assets/models/perry/LeePerrySmith.glb',
         'PhysicalModels': './assets/models/perry/skull_downloadable.glb'
-        
+
     }
 
 };
@@ -776,7 +776,7 @@ function chooseFromHash(gui, url, geometry) {
             guiMeshBasicMaterial(gui, material, geometry);
             url = constants['models'].BasicModels
 
-            return {material, url};
+            return { material, url };
 
             break;
 
@@ -787,7 +787,7 @@ function chooseFromHash(gui, url, geometry) {
             guiMeshLambertMaterial(gui, material, geometry);
             url = constants['models'].LambertModels
 
-            return {material, url};;
+            return { material, url };;
 
             break;
 
@@ -797,7 +797,7 @@ function chooseFromHash(gui, url, geometry) {
             guiMaterial(gui, material, geometry);
             guiMeshPhongMaterial(gui, material, geometry);
             url = constants['models'].PhongModels
-            return {material, url};;
+            return { material, url };;
 
             break;
 
@@ -814,7 +814,7 @@ function chooseFromHash(gui, url, geometry) {
             light2.visible = false;
             light3.visible = false;
 
-            return {material, url};;
+            return { material, url };;
 
             break;
 
@@ -831,7 +831,7 @@ function chooseFromHash(gui, url, geometry) {
             light2.visible = false;
             light3.visible = false;
 
-            return {material, url};;
+            return { material, url };;
 
             break;
 
@@ -842,7 +842,7 @@ function chooseFromHash(gui, url, geometry) {
             guiMeshDepthMaterial(gui, material);
             url = constants['models'].DepthModels
 
-            return {material, url};;
+            return { material, url };;
 
             break;
 
@@ -853,7 +853,7 @@ function chooseFromHash(gui, url, geometry) {
             guiMeshNormalMaterial(gui, material, geometry);
             url = constants['models'].NormalModels
 
-            return {material, url};;
+            return { material, url };;
 
             break;
     }
@@ -938,23 +938,25 @@ const material = result['material']
 url = result['url']
 // console.log(url)
 
-const gltfLoader = new GLTFLoader();
-const gltf = await gltfLoader.loadAsync(url);
-const model = gltf.scene
+if (url === "") {
+    // add geometry
+    const mesh = new THREE.Mesh(geometry)
+    mesh.material = material
+    scene.add(mesh)
+} else {
+    const gltfLoader = new GLTFLoader();
+    const gltf = await gltfLoader.loadAsync(url);
+    const model = gltf.scene
 
-// add model
-model.traverse((child) => {
-    if (child.isMesh) {
-        child.material = material;
-    }
-});
-model.scale.set(10, 10, 10);
-scene.add(model)
-
-// add geometry
-// const mesh = new THREE.Mesh(geometry)
-// mesh.material = material
-// scene.add(mesh)
+    // add model
+    model.traverse((child) => {
+        if (child.isMesh) {
+            child.material = material;
+        }
+    });
+    model.scale.set(10, 10, 10);
+    scene.add(model)
+}
 
 
 let prevFog = false;
