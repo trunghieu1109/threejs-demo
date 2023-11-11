@@ -61,6 +61,17 @@ const constants = {
         'THREE.OneMinusDstColorFactor': THREE.OneMinusDstColorFactor,
         'THREE.SrcAlphaSaturateFactor': THREE.SrcAlphaSaturateFactor
 
+    },
+
+    models: {
+        'BasicModels': './assets/models/perry/skull_downloadable.glb',
+        'DepthModels': './assets/models/perry/skull_downloadable.glb',
+        'NormalModels': './assets/models/perry/skull_downloadable.glb',
+        'LambertModels': './assets/models/perry/skull_downloadable.glb',
+        'PhongModels': './assets/models/perry/skull_downloadable.glb',
+        'StandardModels': './assets/models/perry/LeePerrySmith.glb',
+        'PhysicalModels': './assets/models/perry/skull_downloadable.glb'
+        
     }
 
 };
@@ -750,7 +761,7 @@ function guiMeshPhysicalMaterial(gui, material, geometry) {
 }
 
 // choose gui material
-function chooseFromHash(gui, geometry) {
+function chooseFromHash(gui, url, geometry) {
 
     const selectedMaterial = window.location.hash.substring(1) || 'MeshBasicMaterial';
 
@@ -763,8 +774,9 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshBasicMaterial({ color: 0x049EF4 });
             guiMaterial(gui, material, geometry);
             guiMeshBasicMaterial(gui, material, geometry);
+            url = constants['models'].BasicModels
 
-            return material;
+            return {material, url};
 
             break;
 
@@ -773,24 +785,9 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshLambertMaterial({ color: 0x049EF4 });
             guiMaterial(gui, material, geometry);
             guiMeshLambertMaterial(gui, material, geometry);
+            url = constants['models'].LambertModels
 
-            return material;
-
-            break;
-
-        case 'MeshMatcapMaterial':
-
-            material = new THREE.MeshMatcapMaterial({ matcap: matcaps.porcelainWhite });
-            guiMaterial(gui, material, geometry);
-            guiMeshMatcapMaterial(gui, material, geometry);
-
-            // no need for lights
-
-            light1.visible = false;
-            light2.visible = false;
-            light3.visible = false;
-
-            return material;
+            return {material, url};;
 
             break;
 
@@ -799,23 +796,8 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshPhongMaterial({ color: 0x049EF4 });
             guiMaterial(gui, material, geometry);
             guiMeshPhongMaterial(gui, material, geometry);
-
-            return material;
-
-            break;
-
-        case 'MeshToonMaterial':
-
-            material = new THREE.MeshToonMaterial({ color: 0x049EF4, gradientMap: gradientMaps.threeTone });
-            guiMaterial(gui, material, geometry);
-            guiMeshToonMaterial(gui, material);
-
-            // only use a single point light
-
-            light1.visible = false;
-            light3.visible = false;
-
-            return material;
+            url = constants['models'].PhongModels
+            return {material, url};;
 
             break;
 
@@ -824,6 +806,7 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshStandardMaterial({ color: 0x049EF4 });
             guiMaterial(gui, material, geometry);
             guiMeshStandardMaterial(gui, material, geometry);
+            url = constants['models'].StandardModels
 
             // only use scene environment
 
@@ -831,7 +814,7 @@ function chooseFromHash(gui, geometry) {
             light2.visible = false;
             light3.visible = false;
 
-            return material;
+            return {material, url};;
 
             break;
 
@@ -840,6 +823,7 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshPhysicalMaterial({ color: 0x049EF4 });
             guiMaterial(gui, material, geometry);
             guiMeshPhysicalMaterial(gui, material, geometry);
+            url = constants['models'].PhysicalModels
 
             // only use scene environment
 
@@ -847,7 +831,7 @@ function chooseFromHash(gui, geometry) {
             light2.visible = false;
             light3.visible = false;
 
-            return material;
+            return {material, url};;
 
             break;
 
@@ -856,8 +840,9 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshDepthMaterial();
             guiMaterial(gui, material, geometry);
             guiMeshDepthMaterial(gui, material);
+            url = constants['models'].DepthModels
 
-            return material;
+            return {material, url};;
 
             break;
 
@@ -866,21 +851,11 @@ function chooseFromHash(gui, geometry) {
             material = new THREE.MeshNormalMaterial();
             guiMaterial(gui, material, geometry);
             guiMeshNormalMaterial(gui, material, geometry);
+            url = constants['models'].NormalModels
 
-            return material;
-
-            break;
-
-        case 'LineBasicMaterial':
-
-            material = new THREE.LineBasicMaterial({ color: 0x2194CE });
-            guiMaterial(gui, material, geometry);
-            guiLineBasicMaterial(gui, material, geometry);
-
-            return material;
+            return {material, url};;
 
             break;
-
     }
 
 }
@@ -955,14 +930,17 @@ geometry.attributes.uv2 = geometry.attributes.uv;
 
 generateVertexColors(geometry);
 
-// load models
-const url = './assets/models/perry/skull_downloadable.glb';
+let url = ""
+
+// create material
+const result = chooseFromHash(gui, url, geometry);
+const material = result['material']
+url = result['url']
+// console.log(url)
+
 const gltfLoader = new GLTFLoader();
 const gltf = await gltfLoader.loadAsync(url);
 const model = gltf.scene
-
-// create material
-const material = chooseFromHash(gui, geometry);
 
 // add model
 model.traverse((child) => {
