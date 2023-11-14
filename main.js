@@ -3,6 +3,7 @@ import { RoomEnvironment } from './jsm/environments/RoomEnvironment.js';
 import { GUI } from './jsm/libs/lil-gui.module.min.js'
 import { OrbitControls } from './three/OrbitControls.js'
 import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js'
+// import { BinaryLoader } from 'https://cdn.skypack.dev/three@110.0.1/examples/jsm/loaders/BinaryLoader.js'
 
 // define constants for properties
 const constants = {
@@ -67,7 +68,7 @@ const constants = {
         'BasicModels': './assets/models/perry/skull_downloadable.glb',
         'DepthModels': './assets/models/perry/skull_downloadable.glb',
         'NormalModels': './assets/models/perry/skull_downloadable.glb',
-        'LambertModels': './assets/models/perry/skull_downloadable.glb',
+        'LambertModels': '',
         'PhongModels': "",
         'StandardModels': './assets/models/perry/LeePerrySmith.glb',
         'PhysicalModels': './assets/models/perry/skull_downloadable.glb'
@@ -104,9 +105,8 @@ const envMaps = (function () {
     const path = './assets/texture/cube/royal_castle/';
     const format = '.jpg';
     const urls = [
-        path + 'px' + format, path + 'nx' + format,
-        path + 'py' + format, path + 'ny' + format,
-        path + 'pz' + format, path + 'nz' + format
+        path + 'px' + format, path + 'nx' + format, path + 'py' + format, 
+        path + 'ny' + format, path + 'pz' + format, path + 'nz' + format
     ];
 
     const reflectionCube = cubeTextureLoader.load(urls);
@@ -172,11 +172,17 @@ const bumpMaps = (function () {
     bricks5.wrapS = THREE.RepeatWrapping;
     bricks5.wrapT = THREE.RepeatWrapping;
     bricks5.repeat.set(9, 1);
+    const bricks6 = textureLoader.load('/assets/texture/displacement_4.png');
+    bricks6.wrapS = THREE.RepeatWrapping;
+    bricks6.wrapT = THREE.RepeatWrapping;
+    bricks6.repeat.set(9, 1);
 
     const perry = textureLoader.load('./assets/models/perry/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
     perry.wrapS = THREE.RepeatWrapping;
     perry.wrapT = THREE.RepeatWrapping;
     perry.repeat.set(9, 1);
+
+    // console.log(bricks)
 
     return {
         none: null,
@@ -185,6 +191,7 @@ const bumpMaps = (function () {
         bricks_bump3: bricks3,
         bricks_bump4: bricks4,
         bricks_bump5: bricks5,
+        bricks_bump6: bricks6,
         perry: perry
 
     };
@@ -205,6 +212,11 @@ const normalMaps = (function () {
     bricks2.wrapT = THREE.RepeatWrapping;
     bricks2.repeat.set(9, 1);
 
+    const bricks3 = textureLoader.load('/assets/texture/normal_3.png');
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+
     const perry = textureLoader.load('/assets/models/perry/Infinite-Level_02_Tangent_SmoothUV.jpg');
     perry.wrapS = THREE.RepeatWrapping;
     perry.wrapT = THREE.RepeatWrapping;
@@ -215,6 +227,7 @@ const normalMaps = (function () {
         none: null,
         bricks_normal1: bricks,
         bricks_normal2: bricks2,
+        bricks_normal3: bricks3,
         perry: perry
     };
 
@@ -228,6 +241,21 @@ const displacementMaps = (function () {
     bricks.wrapT = THREE.RepeatWrapping;
     bricks.repeat.set(9, 1);
 
+    const bricks2 = textureLoader.load('/assets/texture/displacement_2.png');
+    bricks2.wrapS = THREE.RepeatWrapping;
+    bricks2.wrapT = THREE.RepeatWrapping;
+    bricks2.repeat.set(9, 1);
+
+    const bricks3 = textureLoader.load('/assets/texture/displacement_3.png');
+    bricks3.wrapS = THREE.RepeatWrapping;
+    bricks3.wrapT = THREE.RepeatWrapping;
+    bricks3.repeat.set(9, 1);
+
+    const bricks4 = textureLoader.load('/assets/texture/displacement_4.png');
+    bricks4.wrapS = THREE.RepeatWrapping;
+    bricks4.wrapT = THREE.RepeatWrapping;
+    bricks4.repeat.set(9, 1);
+
     const perry = textureLoader.load('./assets/models/perry/Infinite-Level_02_Disp_NoSmoothUV-4096.jpg');
     perry.wrapS = THREE.RepeatWrapping;
     perry.wrapT = THREE.RepeatWrapping;
@@ -236,6 +264,9 @@ const displacementMaps = (function () {
     return {
         none: null,
         bricks_displacement1: bricks,
+        bricks_displacement2: bricks2,
+        bricks_displacement3: bricks3,
+        bricks_displacement4: bricks4,
         perry: perry
     };
 
@@ -553,23 +584,6 @@ function guiMeshNormalMaterial(gui, material, geometry) {
 
 }
 
-// set gui for linebasicmaterial
-function guiLineBasicMaterial(gui, material, geometry) {
-
-    const data = {
-        color: material.color.getHex()
-    };
-
-    const folder = gui.addFolder('THREE.LineBasicMaterial');
-
-    folder.addColor(data, 'color').onChange(handleColorChange(material.color));
-    folder.add(material, 'linewidth', 0, 10);
-    folder.add(material, 'linecap', ['butt', 'round', 'square']);
-    folder.add(material, 'linejoin', ['round', 'bevel', 'miter']);
-    folder.add(material, 'vertexColors').onChange(needsUpdate(material, geometry));
-    folder.add(material, 'fog').onChange(needsUpdate(material, geometry));
-
-}
 
 // set gui for meshlambertmaterial
 function guiMeshLambertMaterial(gui, material, geometry) {
@@ -601,32 +615,13 @@ function guiMeshLambertMaterial(gui, material, geometry) {
     folder.add(material, 'bumpScale', 0, 1);
     folder.add(data, 'normalMap', normalMapKeys).onChange(updateTexture(material, 'normalMap', normalMaps));
     folder.add(data, 'displacementMap', displacementMapKeys).onChange(updateTexture(material, 'displacementMap', displacementMaps));
-    //folder.add(material, 'displacementBias', -1, 1);
+    folder.add(material, 'displacementScale', 0, 1);
     folder.add(data, 'aoMap', aoMapKeys).onChange(updateTexture(material, 'aoMap', aoMaps));
     folder.add(data, 'map', diffuseMapKeys).onChange(updateTexture(material, 'map', diffuseMaps));
     folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
     folder.add(material, 'combine', constants.combine).onChange(updateCombine(material));
     folder.add(material, 'reflectivity', 0, 1);
     folder.add(material, 'refractionRatio', 0, 1);
-
-}
-
-// set gui for meshmatcapmaterial
-function guiMeshMatcapMaterial(gui, material, geometry) {
-
-    const data = {
-        color: material.color.getHex(),
-        matcap: matcapKeys[1],
-        alphaMap: alphaMapKeys[0]
-    };
-
-    const folder = gui.addFolder('THREE.MeshMatcapMaterial');
-
-    folder.addColor(data, 'color').onChange(handleColorChange(material.color));
-
-    folder.add(material, 'flatShading').onChange(needsUpdate(material, geometry));
-    folder.add(data, 'matcap', matcapKeys).onChange(updateTexture(material, 'matcap', matcaps));
-    folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
 
 }
 
@@ -648,7 +643,7 @@ function guiMeshPhongMaterial(gui, material, geometry) {
     folder.addColor(data, 'emissive').onChange(handleColorChange(material.emissive));
     folder.addColor(data, 'specular').onChange(handleColorChange(material.specular));
 
-    folder.add(material, 'shininess', 0, 100);
+    folder.add(material, 'shininess', 0, 150);
     folder.add(material, 'flatShading').onChange(needsUpdate(material, geometry));
     folder.add(material, 'wireframe');
     folder.add(material, 'vertexColors').onChange(needsUpdate(material, geometry));
@@ -659,25 +654,6 @@ function guiMeshPhongMaterial(gui, material, geometry) {
     folder.add(material, 'combine', constants.combine).onChange(updateCombine(material));
     folder.add(material, 'reflectivity', 0, 1);
     folder.add(material, 'refractionRatio', 0, 1);
-
-}
-
-// set gui for meshtoonmaterial
-function guiMeshToonMaterial(gui, material) {
-
-    const data = {
-        color: material.color.getHex(),
-        map: diffuseMapKeys[0],
-        gradientMap: gradientMapKeys[1],
-        alphaMap: alphaMapKeys[0]
-    };
-
-    const folder = gui.addFolder('THREE.MeshToonMaterial');
-
-    folder.addColor(data, 'color').onChange(handleColorChange(material.color));
-    folder.add(data, 'map', diffuseMapKeys).onChange(updateTexture(material, 'map', diffuseMaps));
-    folder.add(data, 'gradientMap', gradientMapKeys).onChange(updateTexture(material, 'gradientMap', gradientMaps));
-    folder.add(data, 'alphaMap', alphaMapKeys).onChange(updateTexture(material, 'alphaMap', alphaMaps));
 
 }
 
@@ -925,7 +901,8 @@ scene.add(light3);
 guiScene(gui, scene);
 
 // create geometry
-const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32).toNonIndexed();
+// const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32).toNonIndexed();
+const geometry = new THREE.SphereGeometry(10, 10, 10);
 geometry.attributes.uv2 = geometry.attributes.uv;
 
 generateVertexColors(geometry);
@@ -935,6 +912,7 @@ let url = ""
 // create material
 const result = chooseFromHash(gui, url, geometry);
 const material = result['material']
+
 url = result['url']
 // console.log(url)
 
