@@ -69,7 +69,7 @@ const constants = {
         'DepthModels': './assets/models/perry/skull_downloadable.glb',
         'NormalModels': './assets/models/perry/skull_downloadable.glb',
         'LambertModels': '',
-        'PhongModels': "",
+        'PhongModels': "./assets/models/helmet/DamagedHelmet.gltf",
         'StandardModels': './assets/models/perry/LeePerrySmith.glb',
         'PhysicalModels': './assets/models/perry/skull_downloadable.glb'
 
@@ -769,7 +769,7 @@ function chooseFromHash(gui, url, geometry) {
 
         case 'MeshPhongMaterial':
 
-            material = new THREE.MeshPhongMaterial({ color: 0x049EF4 });
+            material = new THREE.MeshPhongMaterial({ color: 0x049EF4, specular: 0x969696 });
             guiMaterial(gui, material, geometry);
             guiMeshPhongMaterial(gui, material, geometry);
             url = constants['models'].PhongModels
@@ -891,7 +891,7 @@ light1.position.set(0, 200, 0);
 scene.add(light1);
 
 const light2 = new THREE.DirectionalLight(0xffffff, 3);
-light2.position.set(100, 200, 100);
+light2.position.set(200, 0, 0);
 scene.add(light2);
 
 const light3 = new THREE.DirectionalLight(0xffffff, 3);
@@ -901,8 +901,8 @@ scene.add(light3);
 guiScene(gui, scene);
 
 // create geometry
-// const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32).toNonIndexed();
-const geometry = new THREE.SphereGeometry(10, 10, 10);
+const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32).toNonIndexed();
+// const geometry = new THREE.SphereGeometry(10, 10, 10);
 geometry.attributes.uv2 = geometry.attributes.uv;
 
 generateVertexColors(geometry);
@@ -916,11 +916,14 @@ const material = result['material']
 url = result['url']
 // console.log(url)
 
+let prevFog = false;
+
 if (url === "") {
     // add geometry
     const mesh = new THREE.Mesh(geometry)
     mesh.material = material
     scene.add(mesh)
+    render_geo(mesh)
 } else {
     const gltfLoader = new GLTFLoader();
     const gltf = await gltfLoader.loadAsync(url);
@@ -934,31 +937,31 @@ if (url === "") {
     });
     model.scale.set(10, 10, 10);
     scene.add(model)
+    render()
 }
 
 
-let prevFog = false;
 
 
 // use geometry
-// function render() {
+function render_geo(mesh) {
 
-// 	requestAnimationFrame(render);
+	requestAnimationFrame(render);
 
-// 	mesh.rotation.x += 0.005;
-// 	mesh.rotation.y += 0.005;
-// 	controls.update();
+	mesh.rotation.x += 0.005;
+	mesh.rotation.y += 0.005;
+	controls.update();
 
-// 	if (prevFog !== scene.fog) {
+	if (prevFog !== scene.fog) {
 
-// 		mesh.material.needsUpdate = true;
-// 		prevFog = scene.fog;
+		mesh.material.needsUpdate = true;
+		prevFog = scene.fog;
 
-// 	}
+	}
 
-// 	renderer.render(scene, camera);
+	renderer.render(scene, camera);
 
-// }
+}
 
 // use model
 function render() {
@@ -983,5 +986,3 @@ window.addEventListener('resize', function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
 }, false);
-
-render();

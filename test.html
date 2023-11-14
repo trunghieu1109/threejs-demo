@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three.js Example</title>
+    <link rel="stylesheet" href="./main.css">
     <style>
         body {
             margin: 0;
@@ -13,6 +14,17 @@
 </head>
 
 <body>
+    <div class="menu">
+        <button class="choice">
+			<a id='basic' href='#cone' target='_blank'>Cone</a>
+		</button>
+		<button class="choice">
+			<a id='lambert' href='#cylinder' target='_blank'>Cylinder</a>
+		</button>
+		<button class="choice">
+			<a id='depth' href='#box' target='_blank'>Box</a>
+		</button>
+    </div>
     <script src="https://threejs.org/build/three.js"></script>
     <script type="module">
         import { OrbitControls } from "./three/OrbitControls.js";
@@ -90,7 +102,17 @@
             displacement.repeat.set(9, 1);
 
             // Create cube and add to scene.
-            var geometry = new THREE.BoxGeometry(100, 100, 100);
+            var geometry;
+            var type = window.location.hash.substring(1)
+            if (type == "cone") {
+                geometry = new THREE.ConeGeometry( 50, 200, 320 );
+            } else {
+                if (type == 'box') {
+                    geometry = new THREE.BoxGeometry(100, 100, 100);
+                } else {
+                    geometry = new THREE.CylinderGeometry( 50, 50, 200, 320 ); 
+                }
+            }
             var materials = [
                 new THREE.MeshPhysicalMaterial({ normalMap: normal3 }),
                 new THREE.MeshNormalMaterial({ normalMap: normal2 }),
@@ -128,8 +150,8 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            // mesh.rotation.x += 0.005;
-            // mesh.rotation.y += 0.01;
+            mesh.rotation.x += 0.005;
+            mesh.rotation.y += 0.01;
             renderer.render(scene, camera);
             // stats.update();
         }
