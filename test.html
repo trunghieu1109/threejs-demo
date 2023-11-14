@@ -39,15 +39,26 @@
             controls.screenSpacePanning = false;
             controls.maxPolarAngle = Math.PI;
 
+            const cubeTextureLoader = new THREE.CubeTextureLoader();
+            const path = './assets/texture/cube/royal_castle/';
+            const format = '.jpg';
+            const urls = [
+                path + 'px' + format, path + 'nx' + format,
+                path + 'py' + format, path + 'ny' + format,
+                path + 'pz' + format, path + 'nz' + format
+            ];
+
+            const cubeBackground = cubeTextureLoader.load(urls);
+
             // Create scene.
             scene = new THREE.Scene();
+            scene.background = cubeBackground
             // Create material
             material = new THREE.MeshPhongMaterial({
                 color: 0x049EF4
             });
 
             const textureLoader = new THREE.TextureLoader();
-            const cubeTextureLoader = new THREE.CubeTextureLoader();
 
 
             // bump map
@@ -81,7 +92,7 @@
             // Create cube and add to scene.
             var geometry = new THREE.BoxGeometry(100, 100, 100);
             var materials = [
-                new THREE.MeshPhysicalMaterial({normalMap: normal3}),
+                new THREE.MeshPhysicalMaterial({ normalMap: normal3 }),
                 new THREE.MeshNormalMaterial({ normalMap: normal2 }),
                 new THREE.MeshBasicMaterial({ wireframe: true }),
                 new THREE.MeshLambertMaterial({ color: 0xff0000, bumpMap: bump }),
