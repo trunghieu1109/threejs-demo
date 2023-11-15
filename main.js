@@ -71,7 +71,7 @@ const constants = {
         'LambertModels': '',
         'PhongModels': "./assets/models/helmet/DamagedHelmet.gltf",
         'StandardModels': './assets/models/perry/LeePerrySmith.glb',
-        'PhysicalModels': './assets/models/perry/skull_downloadable.glb'
+        'PhysicalModels': './assets/models/shelf/shelf.glb'
 
     }
 
